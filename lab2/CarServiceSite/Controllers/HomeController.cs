@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CarServiceSite.Models;
+using System.Text.Encodings.Web;
 
 namespace CarServiceSite.Controllers
 {
@@ -32,6 +33,11 @@ namespace CarServiceSite.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public string Test(string name, int numTimes = 1)
+        {
+            return HtmlEncoder.Default.Encode($"Hello {name}, NumTimes is: {numTimes}");
         }
     }
 }
