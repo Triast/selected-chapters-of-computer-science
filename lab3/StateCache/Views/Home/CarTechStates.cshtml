@@ -1,0 +1,64 @@
+﻿@model CarTechStatesViewModel
+
+<form asp-action="CarTechStates" asp-controller="Home" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Entity.Suspension" class="col-md-2 control-label"></label>
+        <div class="col-md-4">
+            <input type="text" name="Suspension" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Entity.BrakeSystem" class="col-md-2 control-label"></label>
+        <div class="col-md-4">
+            <select name="BrakeSystem" asp-items="Model.SelectListItems"></select>
+        </div>
+    </div>
+    <div class="form-group">
+        <p>Доступные торрмозные системы:</p>
+        <ul>
+            @foreach (var item in Model.SelectListItems)
+            {
+                <li>@item.Text</li>
+            }
+        </ul>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Отправить" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(c => c.Entity.Car.StateNumber)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Inspector.FullName)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Date)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Mileage)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.BrakeSystem)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Suspension)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Wheels)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Lightning)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.AdditionalEquipment)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.MarkOnPassageOfServiceStation)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var state in Model.Collection)
+        {
+        <tr>
+            <td>@Html.DisplayFor(c => state.Car.StateNumber)</td>
+            <td>@Html.DisplayFor(c => state.Inspector.FullName)</td>
+            <td>@Html.DisplayFor(c => state.Date)</td>
+            <td>@Html.DisplayFor(c => state.Mileage)</td>
+            <td>@Html.DisplayFor(c => state.BrakeSystem)</td>
+            <td>@Html.DisplayFor(c => state.Suspension)</td>
+            <td>@Html.DisplayFor(c => state.Wheels)</td>
+            <td>@Html.DisplayFor(c => state.Lightning)</td>
+            <td>@Html.DisplayFor(c => state.AdditionalEquipment)</td>
+            <td>@Html.DisplayFor(c => state.MarkOnPassageOfServiceStation)</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<img src="~/images/IMG_0346.jpg" class="img-thumbnail" alt="Happy man with red phone" />

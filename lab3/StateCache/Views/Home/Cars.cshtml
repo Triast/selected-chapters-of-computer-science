@@ -1,0 +1,60 @@
+﻿@model CarsViewModel
+
+<form asp-action="Cars" asp-controller="Home" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Entity.StateNumber" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input type="text" name="StateNumber" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Entity.Mark" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select name="Mark" asp-items="Model.SelectListItems"></select>
+        </div>
+    </div>
+    <div class="form-group">
+        <p>Доступные марки:</p>
+        <ul>
+            @foreach (var item in Model.SelectListItems)
+            {
+                <li>@item.Text</li>
+            }
+        </ul>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Отправить" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(c => c.Entity.StateNumber)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.TechnicalPassport)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Mark)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.EngineVolume)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.BodyNumber)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.EngineNumber)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.ReleaseYear)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.OwnerName)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var car in Model.Collection)
+        {
+            <tr>
+                <td>@Html.DisplayFor(c => car.StateNumber)</td>
+                <td>@Html.DisplayFor(c => car.TechnicalPassport)</td>
+                <td>@Html.DisplayFor(c => car.Mark)</td>
+                <td>@Html.DisplayFor(c => car.EngineVolume)</td>
+                <td>@Html.DisplayFor(c => car.BodyNumber)</td>
+                <td>@Html.DisplayFor(c => car.EngineNumber)</td>
+                <td>@Html.DisplayFor(c => car.ReleaseYear)</td>
+                <td>@Html.DisplayFor(c => car.OwnerName)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<img src="~/images/IMG_0346.jpg" class="img-thumbnail" alt="Happy man with red phone" />

@@ -1,0 +1,48 @@
+﻿@model InspectorsViewModel
+
+<form asp-action="Inspectors" asp-controller="Home" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Entity.FullName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input type="text" name="FullName" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Entity.Subdivision" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <select name="Subdivision" asp-items="Model.SelectListItems"></select>
+        </div>
+    </div>
+    <div class="form-group">
+        <p>Доступные подразделение:</p>
+        <ul>
+            @foreach (var item in Model.SelectListItems)
+            {
+                <li>@item.Text</li>
+            }
+        </ul>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Отправить" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(c => c.Entity.FullName)</th>
+            <th>@Html.DisplayNameFor(c => c.Entity.Subdivision)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var inspector in Model.Collection)
+        {
+            <tr>
+                <td>@Html.DisplayFor(c => inspector.FullName)</td>
+                <td>@Html.DisplayFor(c => inspector.Subdivision)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<img src="~/images/IMG_0346.jpg" class="img-thumbnail" alt="Happy man with red phone" />

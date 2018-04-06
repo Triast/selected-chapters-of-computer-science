@@ -1,6 +1,6 @@
 using System;
 
-namespace StateCahce.Models
+namespace StateCache.Models
 {
     public class ErrorViewModel
     {
