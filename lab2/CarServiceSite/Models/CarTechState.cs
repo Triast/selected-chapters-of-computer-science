@@ -1,23 +1,29 @@
-﻿namespace CarServiceSite.Models
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace CarServiceSite.Models
 {
     public class CarTechState
     {
         public int CarTechStateId { get; set; }
         public int CarId { get; set; }
         public int InspectorId { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayName("Дата")]
         public System.DateTime Date { get; set; }
-        // Пробег
+        [DisplayName("Пробег")]
         public double Mileage { get; set; }
-        // Тормозная система
+        [DisplayName("Тормозная система")]
         public string BrakeSystem { get; set; }
-        // Подвеска
+        [DisplayName("Подвеска")]
         public string Suspension { get; set; }
+        [DisplayName("Колёса")]
         public string Wheels { get; set; }
-        // Осветительные приборы
+        [DisplayName("Осветительные приборы")]
         public string Lightning { get; set; }
-        // Доп. оборудование
+        [DisplayName("Доп. оборудование")]
         public string AdditionalEquipment { get; set; }
-        // отметка о прохождении СТО
+        [DisplayName("Прохождение СТО")]
         public bool MarkOnPassageOfServiceStation { get; set; }
 
         public virtual Car Car { get; set; }
