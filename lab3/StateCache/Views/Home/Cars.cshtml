@@ -1,10 +1,16 @@
 ﻿@model CarsViewModel
 
+@{ 
+    ViewData["Title"] = "Cars";
+
+    var stateNumber = ViewData["StateNumber"] ?? "";
+}
+
 <form asp-action="Cars" asp-controller="Home" method="post" class="form-horizontal">
     <div class="form-group">
         <label asp-for="Entity.StateNumber" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input type="text" name="StateNumber" class="form-control" />
+            <input type="text" name="StateNumber" class="form-control" value="@stateNumber" />
         </div>
     </div>
     <div class="form-group">

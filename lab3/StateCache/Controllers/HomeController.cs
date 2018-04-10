@@ -1,121 +1,36 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using StateCache.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using StateCache.Models;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace StateCache.Controllers
 {
     public class HomeController : Controller
     {
-        //static Car[] cars = new Car[]
-        //{
-        //    new Car
-        //    {
-        //        StateNumber = "0123AA-01",
-        //        TechnicalPassport = "AA123456",
-        //        Mark = "Lada",
-        //        EngineVolume = 500,
-        //        BodyNumber = "AAAA0123",
-        //        EngineNumber = "ASCX4513",
-        //        ReleaseYear = 1990,
-        //        OwnerName = "Комарец Игорь Валерьевич"
-        //    },
-        //    new Car
-        //    {
-        //        StateNumber = "1225FA-01",
-        //        TechnicalPassport = "AS215463",
-        //        Mark = "VAZ",
-        //        EngineVolume = 600,
-        //        BodyNumber = "ABDF6514",
-        //        EngineNumber = "FASC5412",
-        //        ReleaseYear = 2000,
-        //        OwnerName = "Комарец Виктор Валерьевич"
-        //    }
-        //};
-        //static List<SelectListItem> marks = new List<SelectListItem>
-        //{
-        //    new SelectListItem() {Value = "Lada", Text = "Lada"},
-        //    new SelectListItem() {Value = "VAZ", Text = "VAZ"}
-        //};
-
-        //static Inspector[] inspectors = new Inspector[]
-        //{
-        //    new Inspector
-        //    {
-        //        FullName = "Иванов Иван Иванович",
-        //        Subdivision = "Подразделение_1"
-        //    },
-        //    new Inspector
-        //    {
-        //        FullName = "Петров Пётр Петрович",
-        //        Subdivision = "Подразделение_2"
-        //    }
-        //};
-        //static List<SelectListItem> subdivisions = new List<SelectListItem>
-        //{
-        //    new SelectListItem { Value = "Подразделение_1", Text = "Подразделение_1" },
-        //    new SelectListItem { Value = "Подразделение_2", Text = "Подразделение_2" }
-        //};
-
-        //static CarTechState[] states = new CarTechState[]
-        //{
-        //    new CarTechState
-        //    {
-        //        CarId = 1,
-        //        InspectorId = 2,
-        //        Date = DateTime.Now,
-        //        Mileage = 500,
-        //        BrakeSystem = "Тормозная_система_1",
-        //        Suspension = "Подвеска_1",
-        //        Wheels = "Колёса_1",
-        //        Lightning = "Осветительный_прибор_1",
-        //        AdditionalEquipment = "Отсутствует",
-        //        MarkOnPassageOfServiceStation = true,
-
-        //        Car = cars[0],
-        //        Inspector = inspectors[1]
-        //    },
-        //    new CarTechState
-        //    {
-        //        CarId = 2,
-        //        InspectorId = 1,
-        //        Date = DateTime.Now.AddMonths(-2),
-        //        Mileage = 600,
-        //        BrakeSystem = "Тормозная_система_2",
-        //        Suspension = "Подвеска_2",
-        //        Wheels = "Колёса_2",
-        //        Lightning = "Осветительный_прибор_2",
-        //        AdditionalEquipment = "Отсутствует",
-        //        MarkOnPassageOfServiceStation = false,
-
-        //        Car = cars[1],
-        //        Inspector = inspectors[0]
-        //    }
-        //};
-        //static List<SelectListItem> brakeSystems = new List<SelectListItem>
-        //{
-        //    new SelectListItem { Value = "Тормозная_система_1", Text = "Тормозная_система_1" },
-        //    new SelectListItem { Value = "Тормозная_система_2", Text = "Тормозная_система_2" }
-        //};
-
         readonly CarServiceContext _context;
+        readonly IMemoryCache _cache;
+        readonly ISession _session;
 
-        public HomeController(CarServiceContext context)
+        public HomeController(CarServiceContext context, IMemoryCache cache, ISession session)
         {
             _context = context;
+            _cache = cache;
+            _session = session;
         }
 
+        [ResponseCache(CacheProfileName = "Caching")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [ResponseCache(CacheProfileName = "Caching")]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -123,6 +38,7 @@ namespace StateCache.Controllers
             return View();
         }
 
+        [ResponseCache(CacheProfileName = "Caching")]
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
@@ -134,16 +50,21 @@ namespace StateCache.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public async Task<IActionResult> Cars()
+        
+        public IActionResult Cars()
         {
+            var car = _cache.Get<Car>("CarsTuple");
+
+            ViewData["StateNumber"] = Request.Cookies["StateNumber"];
+            var mark = Request.Cookies["Mark"];
+
             var model = new CarsViewModel
             {
-                Collection = await _context.Cars.ToListAsync(),
-                SelectListItems = await _context
-                    .Cars
-                    .Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark })
-                    .ToListAsync()
+                Collection = new List<Car> { car },
+                SelectListItems = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = car.Mark, Text = car.Mark, Selected = car.Mark == mark }
+                }
             };
 
             return View(model);
@@ -152,6 +73,9 @@ namespace StateCache.Controllers
         [HttpPost]
         public async Task<IActionResult> Cars(Car car)
         {
+            Response.Cookies.Append("StateNumber", car.StateNumber);
+            Response.Cookies.Append("Mark", car.Mark);
+
             var model = new CarsViewModel
             {
                 Collection = await _context
@@ -161,21 +85,34 @@ namespace StateCache.Controllers
                 SelectListItems = await _context
                     .Cars
                     .Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark })
+                    .Distinct()
                     .ToListAsync()
             };
 
             return View(model);
         }
-
-        public async Task<IActionResult> Inspectors()
+        
+        public IActionResult Inspectors()
         {
+            var inspector = _cache.Get<Inspector>("InspectorsTuple");
+
+            var formData = _session.GetInspector("InspectorFormData");
+
+            ViewData["FullName"] = formData.FullName;
+            var subdivision = formData.Subdivision;
+
             var model = new InspectorsViewModel
             {
-                Collection = await _context.Inspectors.ToListAsync(),
-                SelectListItems = await _context
-                    .Inspectors
-                    .Select(i => new SelectListItem { Value = i.Subdivision, Text = i.Subdivision })
-                    .ToListAsync()
+                Collection = new List<Inspector> { inspector },
+                SelectListItems = new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Value = inspector.Subdivision,
+                        Text = inspector.Subdivision,
+                        Selected = inspector.Subdivision == subdivision
+                    }
+                }
             };
 
             return View(model);
@@ -193,21 +130,34 @@ namespace StateCache.Controllers
                 SelectListItems = await _context
                     .Inspectors
                     .Select(i => new SelectListItem { Value = i.Subdivision, Text = i.Subdivision })
+                    .Distinct()
                     .ToListAsync()
             };
 
             return View(model);
         }
-
-        public async Task<IActionResult> CarTechStates()
+        
+        public IActionResult CarTechStates()
         {
+            var state = _cache.Get<CarTechState>("StatesTuple");
+
+            var formData = _session.GetCarTechState("StateFormData");
+
+            ViewData["Suspension"] = formData.Suspension;
+            var brakeSystem = formData.BrakeSystem;
+
             var model = new CarTechStatesViewModel
             {
-                Collection = await _context.CarTechStates.ToListAsync(),
-                SelectListItems = await _context
-                    .CarTechStates
-                    .Select(s => new SelectListItem { Value = s.BrakeSystem, Text = s.BrakeSystem })
-                    .ToListAsync()
+                Collection = new List<CarTechState> { state },
+                SelectListItems = new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Value = state.BrakeSystem,
+                        Text = state.BrakeSystem,
+                        Selected = state.BrakeSystem == brakeSystem
+                    }
+                }
             };
 
             return View(model);
@@ -220,11 +170,14 @@ namespace StateCache.Controllers
             {
                 Collection = await _context
                     .CarTechStates
+                    .Include("Car")
+                    .Include("Inspector")
                     .Where(s => s.Suspension.StartsWith(state.Suspension ?? "") && s.BrakeSystem == state.BrakeSystem)
                     .ToListAsync(),
                 SelectListItems = await _context
                     .CarTechStates
                     .Select(s => new SelectListItem { Value = s.BrakeSystem, Text = s.BrakeSystem })
+                    .Distinct()
                     .ToListAsync()
             };
 

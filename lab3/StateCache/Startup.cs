@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.WebEncoders;
 using StateCache.Models;
+using StateCache.RequestPipeline.Middleware;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -22,9 +24,17 @@ namespace StateCache
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
+            services.AddSession();
             services.AddDbContext<CarServiceContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("LocalDbConnection")));
-            services.AddMvc();
+            services.AddMvc(options =>
+                options.CacheProfiles.Add("Caching",
+                    new CacheProfile
+                    {
+                        Duration = 252
+                    })
+            );
             services.Configure<WebEncoderOptions>(options =>
             {
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
@@ -44,6 +54,7 @@ namespace StateCache
             }
 
             app.UseStaticFiles();
+            app.UseCachingLastTuples();
 
             app.UseMvc(routes =>
             {

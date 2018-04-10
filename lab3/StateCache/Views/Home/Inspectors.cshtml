@@ -1,10 +1,16 @@
 ﻿@model InspectorsViewModel
 
+@{ 
+    ViewData["Title"] = "Inspectors";
+
+    var fullName = ViewData["FullName"] ?? "";
+}
+
 <form asp-action="Inspectors" asp-controller="Home" method="post" class="form-horizontal">
     <div class="form-group">
         <label asp-for="Entity.FullName" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            <input type="text" name="FullName" class="form-control" />
+            <input type="text" name="FullName" class="form-control" value="@fullName" />
         </div>
     </div>
     <div class="form-group">
