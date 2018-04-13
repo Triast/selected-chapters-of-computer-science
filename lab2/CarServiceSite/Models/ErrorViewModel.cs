@@ -1,5 +1,3 @@
-using System;
-
 namespace CarServiceSite.Models
 {
     public class ErrorViewModel

@@ -1,12 +1,10 @@
-﻿using System;
+﻿using CarServiceSite.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using CarServiceSite.Models;
-using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CarServiceSite.Controllers
 {
@@ -129,75 +127,57 @@ namespace CarServiceSite.Controllers
 
         public IActionResult Cars()
         {
-            var model = new CarsViewModel
-            {
-                Collection = cars,
-                SelectListItems = marks
-            };
+            ViewData["Marks"] = marks;
 
-            return View(model);
+            return View(cars);
         }
 
         [HttpPost]
         public IActionResult Cars(Car car)
         {
-            var model = new CarsViewModel
-            {
-                SelectListItems = marks
-            };
+            ViewData["Marks"] = marks;
             
-            model.Collection = cars.Where(c => c.StateNumber.StartsWith(car.StateNumber ?? ""));
-            model.Collection = model.Collection.Where(c => c.Mark == car.Mark);
+            var model = cars
+                .Where(c => c.StateNumber.StartsWith(car.StateNumber ?? ""))
+                .Where(c => c.Mark == car.Mark);
 
             return View(model);
         }
 
         public IActionResult Inspectors()
         {
-            var model = new InspectorsViewModel
-            {
-                Collection = inspectors,
-                SelectListItems = subdivisions
-            };
+            ViewData["Subdivisions"] = subdivisions;
 
-            return View(model);
+            return View(inspectors);
         }
 
         [HttpPost]
         public IActionResult Inspectors(Inspector inspector)
         {
-            var model = new InspectorsViewModel
-            {
-                SelectListItems = subdivisions
-            };
+            ViewData["Subdivisions"] = subdivisions;
             
-            model.Collection = inspectors.Where(i => i.FullName.StartsWith(inspector.FullName ?? ""));
-            model.Collection = model.Collection.Where(c => c.Subdivision == inspector.Subdivision);
+            var model = inspectors
+                .Where(i => i.FullName.StartsWith(inspector.FullName ?? ""))
+                .Where(c => c.Subdivision == inspector.Subdivision);
 
             return View(model);
         }
 
         public IActionResult CarTechStates()
         {
-            var model = new CarTechStatesViewModel
-            {
-                Collection = states,
-                SelectListItems = brakeSystems
-            };
+            ViewData["BrakeSystems"] = brakeSystems;
 
-            return View(model);
+            return View(states);
         }
 
         [HttpPost]
         public IActionResult CarTechStates(CarTechState state)
         {
-            var model = new CarTechStatesViewModel
-            {
-                SelectListItems = brakeSystems
-            };
+            ViewData["BrakeSystems"] = brakeSystems;
 
-            model.Collection = states.Where(s => s.Suspension.StartsWith(state.Suspension ?? ""));
-            model.Collection = model.Collection.Where(s => s.BrakeSystem == state.BrakeSystem);
+            var model = states
+                .Where(s => s.Suspension.StartsWith(state.Suspension ?? ""))
+                .Where(s => s.BrakeSystem == state.BrakeSystem);
 
             return View(model);
         }
