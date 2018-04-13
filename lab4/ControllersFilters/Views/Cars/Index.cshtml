@@ -2,6 +2,11 @@
 
 @{
     ViewData["Title"] = "Index";
+
+    var marks = Model
+        .Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark })
+        .Distinct()
+        .ToList();
 }
 
 <h2>Index</h2>
@@ -11,7 +16,7 @@
         <label for="StateNumber">Госномер:</label>
         <input type="text" name="StateNumber" class="form-control" />
         <label for="Mark">Марка:</label>
-        <select name="Mark" asp-items="Model.Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark }).Distinct().ToList()"></select>
+        <select name="Mark" asp-items="marks" class="form-control"></select>
         <label for="ReleaseYear">Год выпуска:</label>
         <input type="number" min="1900" max="@DateTime.Now.Year" name="ReleaseYear" class="form-control" />
         <input type="submit" value="Фильтр" class="btn btn-default" />
@@ -51,7 +56,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.OwnerName)
                 </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
