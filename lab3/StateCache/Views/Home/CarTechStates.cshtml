@@ -1,55 +1,56 @@
-﻿@model CarTechStatesViewModel
+﻿@model IEnumerable<CarTechState>
 
 @{ 
     ViewData["Title"] = "Car tech states";
 
     var suspension = ViewData["Suspension"] ?? "";
+    var brakeSystems = (List<SelectListItem>)ViewData["BrakeSystems"];
 }
 
 <form asp-action="CarTechStates" asp-controller="Home" method="post" class="form-horizontal">
     <div class="form-group">
-        <label asp-for="Entity.Suspension" class="col-md-2 control-label"></label>
+        <label for="Suspension" class="col-md-2 control-label">Подвеска:</label>
         <div class="col-md-4">
             <input type="text" name="Suspension" class="form-control" value="@suspension" />
         </div>
     </div>
     <div class="form-group">
-        <label asp-for="Entity.BrakeSystem" class="col-md-2 control-label"></label>
+        <label for="BrakeSystem" class="col-md-2 control-label"></label>
         <div class="col-md-4">
-            <select name="BrakeSystem" asp-items="Model.SelectListItems"></select>
+            <select name="BrakeSystem" asp-items="brakeSystems" class="form-control"></select>
         </div>
     </div>
     <div class="form-group">
         <p>Доступные тормозные системы:</p>
         <ul>
-            @foreach (var item in Model.SelectListItems)
+            @foreach (var item in brakeSystems)
             {
                 <li>@item.Text</li>
             }
         </ul>
     </div>
     <div class="form-group">
-        <input type="submit" value="Отправить" />
+        <input type="submit" value="Отправить" class="btn btn-default" />
     </div>
 </form>
 
 <table class="table">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(c => c.Entity.Car.StateNumber)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Inspector.FullName)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Date)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Mileage)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.BrakeSystem)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Suspension)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Wheels)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.Lightning)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.AdditionalEquipment)</th>
-            <th>@Html.DisplayNameFor(c => c.Entity.MarkOnPassageOfServiceStation)</th>
+            <th>@Html.DisplayNameFor(model => model.Car.StateNumber)</th>
+            <th>@Html.DisplayNameFor(model => model.Inspector.FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.Date)</th>
+            <th>@Html.DisplayNameFor(model => model.Mileage)</th>
+            <th>@Html.DisplayNameFor(model => model.BrakeSystem)</th>
+            <th>@Html.DisplayNameFor(model => model.Suspension)</th>
+            <th>@Html.DisplayNameFor(model => model.Wheels)</th>
+            <th>@Html.DisplayNameFor(model => model.Lightning)</th>
+            <th>@Html.DisplayNameFor(model => model.AdditionalEquipment)</th>
+            <th>@Html.DisplayNameFor(model => model.MarkOnPassageOfServiceStation)</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var state in Model.Collection)
+        @foreach (var state in Model)
         {
         <tr>
             <td>@Html.DisplayFor(c => state.Car.StateNumber)</td>

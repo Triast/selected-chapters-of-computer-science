@@ -25,6 +25,7 @@ namespace StateCache
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
             services.AddSession();
             services.AddDbContext<CarServiceContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("LocalDbConnection")));
@@ -55,6 +56,7 @@ namespace StateCache
 
             app.UseStaticFiles();
             app.UseCachingLastTuples();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

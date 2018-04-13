@@ -15,13 +15,11 @@ namespace StateCache.Controllers
     {
         readonly CarServiceContext _context;
         readonly IMemoryCache _cache;
-        readonly ISession _session;
 
-        public HomeController(CarServiceContext context, IMemoryCache cache, ISession session)
+        public HomeController(CarServiceContext context, IMemoryCache cache)
         {
             _context = context;
             _cache = cache;
-            _session = session;
         }
 
         [ResponseCache(CacheProfileName = "Caching")]
@@ -58,14 +56,12 @@ namespace StateCache.Controllers
             ViewData["StateNumber"] = Request.Cookies["StateNumber"];
             var mark = Request.Cookies["Mark"];
 
-            var model = new CarsViewModel
+            ViewData["Marks"] = new List<SelectListItem>
             {
-                Collection = new List<Car> { car },
-                SelectListItems = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = car.Mark, Text = car.Mark, Selected = car.Mark == mark }
-                }
+                new SelectListItem { Value = car.Mark, Text = car.Mark, Selected = car.Mark == mark }
             };
+
+            var model = new List<Car> { car };
 
             return View(model);
         }
@@ -76,18 +72,16 @@ namespace StateCache.Controllers
             Response.Cookies.Append("StateNumber", car.StateNumber);
             Response.Cookies.Append("Mark", car.Mark);
 
-            var model = new CarsViewModel
-            {
-                Collection = await _context
-                    .Cars
-                    .Where(c => c.StateNumber.StartsWith(car.StateNumber ?? "") && c.Mark == car.Mark)
-                    .ToListAsync(),
-                SelectListItems = await _context
-                    .Cars
-                    .Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark })
-                    .Distinct()
-                    .ToListAsync()
-            };
+            ViewData["Marks"] = await _context
+                .Cars
+                .Select(c => new SelectListItem { Value = c.Mark, Text = c.Mark })
+                .Distinct()
+                .ToListAsync();
+
+            var model = await _context
+                .Cars
+                .Where(c => c.StateNumber.StartsWith(car.StateNumber ?? "") && c.Mark == car.Mark)
+                .ToListAsync();
 
             return View(model);
         }
@@ -96,24 +90,20 @@ namespace StateCache.Controllers
         {
             var inspector = _cache.Get<Inspector>("InspectorsTuple");
 
-            var formData = _session.GetInspector("InspectorFormData");
+            var formData = HttpContext.Session.GetInspector("InspectorFormData") ?? new Inspector();
 
             ViewData["FullName"] = formData.FullName;
-            var subdivision = formData.Subdivision;
-
-            var model = new InspectorsViewModel
+            ViewData["Subdivisions"] = new List<SelectListItem>
             {
-                Collection = new List<Inspector> { inspector },
-                SelectListItems = new List<SelectListItem>
+                new SelectListItem
                 {
-                    new SelectListItem
-                    {
-                        Value = inspector.Subdivision,
-                        Text = inspector.Subdivision,
-                        Selected = inspector.Subdivision == subdivision
-                    }
+                    Value = inspector.Subdivision,
+                    Text = inspector.Subdivision,
+                    Selected = inspector.Subdivision == formData.Subdivision
                 }
             };
+
+            var model = new List<Inspector> { inspector };
 
             return View(model);
         }
@@ -121,65 +111,63 @@ namespace StateCache.Controllers
         [HttpPost]
         public async Task<IActionResult> Inspectors(Inspector inspector)
         {
-            var model = new InspectorsViewModel
-            {
-                Collection = await _context
-                    .Inspectors
-                    .Where(i => i.FullName.StartsWith(inspector.FullName ?? "") && i.Subdivision == inspector.Subdivision)
-                    .ToListAsync(),
-                SelectListItems = await _context
-                    .Inspectors
-                    .Select(i => new SelectListItem { Value = i.Subdivision, Text = i.Subdivision })
-                    .Distinct()
-                    .ToListAsync()
-            };
+            HttpContext.Session.SetInspector("InspectorFormData", inspector);
+
+            ViewData["Subdivisions"] = await _context
+                .Inspectors
+                .Select(i => new SelectListItem { Value = i.Subdivision, Text = i.Subdivision })
+                .Distinct()
+                .ToListAsync();
+
+            var model = await _context
+                .Inspectors
+                .Where(i => i.FullName.StartsWith(inspector.FullName ?? ""))
+                .Where(i => i.Subdivision == inspector.Subdivision)
+                .ToListAsync();
 
             return View(model);
         }
-        
+
         public IActionResult CarTechStates()
         {
             var state = _cache.Get<CarTechState>("StatesTuple");
 
-            var formData = _session.GetCarTechState("StateFormData");
+            var formData = HttpContext.Session.GetState("StateFormData");
 
             ViewData["Suspension"] = formData.Suspension;
-            var brakeSystem = formData.BrakeSystem;
-
-            var model = new CarTechStatesViewModel
+            ViewData["BrakeSystems"] = new List<SelectListItem>
             {
-                Collection = new List<CarTechState> { state },
-                SelectListItems = new List<SelectListItem>
+                new SelectListItem
                 {
-                    new SelectListItem
-                    {
-                        Value = state.BrakeSystem,
-                        Text = state.BrakeSystem,
-                        Selected = state.BrakeSystem == brakeSystem
-                    }
+                    Value = state.BrakeSystem,
+                    Text = state.BrakeSystem,
+                    Selected = state.BrakeSystem == formData.BrakeSystem
                 }
             };
+
+            var model = new List<CarTechState> { state };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CarTechStates(CarTechState state)
+        public async Task<IActionResult> CarTechStates(StateFilter state)
         {
-            var model = new CarTechStatesViewModel
-            {
-                Collection = await _context
-                    .CarTechStates
-                    .Include("Car")
-                    .Include("Inspector")
-                    .Where(s => s.Suspension.StartsWith(state.Suspension ?? "") && s.BrakeSystem == state.BrakeSystem)
-                    .ToListAsync(),
-                SelectListItems = await _context
-                    .CarTechStates
-                    .Select(s => new SelectListItem { Value = s.BrakeSystem, Text = s.BrakeSystem })
-                    .Distinct()
-                    .ToListAsync()
-            };
+            HttpContext.Session.SetState("StateFormData", state);
+
+            ViewData["BrakeSystems"] = await _context
+                .CarTechStates
+                .Select(s => new SelectListItem { Value = s.BrakeSystem, Text = s.BrakeSystem })
+                .Distinct()
+                .ToListAsync();
+
+            var model = await _context
+                .CarTechStates
+                .Include("Car")
+                .Include("Inspector")
+                .Where(s => s.Suspension.StartsWith(state.Suspension ?? ""))
+                .Where(s => s.BrakeSystem == state.BrakeSystem)
+                .ToListAsync();
 
             return View(model);
         }

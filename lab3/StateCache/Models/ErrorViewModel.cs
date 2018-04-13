@@ -1,5 +1,3 @@
-using System;
-
 namespace StateCache.Models
 {
     public class ErrorViewModel
