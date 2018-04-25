@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using ControllersFilters.Filters;
+using ControllersFilters.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.WebEncoders;
-using ControllersFilters.Models;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -25,7 +26,14 @@ namespace ControllersFilters
         {
             services.AddDbContext<CarServiceContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("LocalDbConnection")));
-            services.AddMvc();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ExceptionHandlingAttribute));
+            });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<MethodsInvocationLoggingAttribute>();
             services.Configure<WebEncoderOptions>(options =>
             {
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
@@ -45,6 +53,7 @@ namespace ControllersFilters
             }
 
             app.UseStaticFiles();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

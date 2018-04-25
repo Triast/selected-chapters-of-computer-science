@@ -1,26 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ControllersFilters.Filters;
+using ControllersFilters.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using ControllersFilters.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ControllersFilters.Controllers
 {
+    public enum InspectorsSortState
+    {
+        FullNameAsc,
+        FullNameDesc,
+        SubdivisionAsc,
+        SubdivisionDesc
+    }
+
+    [ServiceFilter(typeof(MethodsInvocationLoggingAttribute))]
     public class InspectorsController : Controller
     {
-        public enum InspectorsSortState
-        {
-            FullNameAsc,
-            FullNameDesc,
-            SubdivisionAsc,
-            SubdivisionDesc
-        }
-
         readonly CarServiceContext _context;
 
         public InspectorsController(CarServiceContext context)
@@ -28,11 +26,62 @@ namespace ControllersFilters.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(Inspector filter,
-            InspectorsSortState sortOrder = InspectorsSortState.FullNameAsc)
+        [InspectorFormStateSaving]
+        public IActionResult Index(InspectorsSortState sortOrder = InspectorsSortState.FullNameAsc)
         {
-            var inspectors = _context.Inspectors.AsQueryable();
+            if (!HttpContext.Session.TryGet(out IEnumerable<Inspector> inspectors))
+            {
+                inspectors = _context.Inspectors.ToList();
 
+                HttpContext.Session.Set(inspectors);
+            }
+
+            ViewData["Subdivisions"] = inspectors
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Subdivision,
+                    Text = i.Subdivision,
+                    Selected = i.Subdivision == ((string)HttpContext.Items["Subdivision"] ?? "")
+                })
+                .Distinct(new SelectListItemEqualityComparer())
+                .ToList();
+
+            inspectors = SortInspectors(inspectors, sortOrder);
+
+            return View(inspectors);
+        }
+
+        [HttpPost]
+        [InspectorFormStateSaving]
+        public IActionResult Index(InspectorFilter filter, InspectorsSortState sortOrder = InspectorsSortState.FullNameAsc)
+        {
+            if (!HttpContext.Session.TryGet(out IEnumerable<Inspector> inspectors))
+            {
+                inspectors = _context.Inspectors.ToList();
+
+                HttpContext.Session.Set(inspectors);
+            }
+
+            ViewData["Subdivisions"] = inspectors
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Subdivision,
+                    Text = i.Subdivision,
+                    Selected = i.Subdivision == ((string)HttpContext.Items["Subdivision"] ?? "")
+                })
+                .Distinct(new SelectListItemEqualityComparer())
+                .ToList();
+
+            inspectors = SortInspectors(inspectors, sortOrder);
+
+            inspectors = inspectors.Where(i => i.FullName.StartsWith(filter.FullName ?? ""));
+            inspectors = inspectors.Where(i => i.Subdivision.StartsWith(filter.Subdivision ?? ""));
+
+            return View(inspectors);
+        }
+
+        IEnumerable<Inspector> SortInspectors(IEnumerable<Inspector> inspectors, InspectorsSortState sortOrder)
+        {
             ViewData["FullName"] = sortOrder == InspectorsSortState.FullNameAsc ?
                 InspectorsSortState.FullNameDesc : InspectorsSortState.FullNameAsc;
             ViewData["Subdivision"] = sortOrder == InspectorsSortState.SubdivisionAsc ?
@@ -41,25 +90,16 @@ namespace ControllersFilters.Controllers
             switch (sortOrder)
             {
                 case InspectorsSortState.FullNameAsc:
-                    inspectors = inspectors.OrderBy(i => i.FullName);
-                    break;
+                    return inspectors.OrderBy(i => i.FullName);
                 case InspectorsSortState.FullNameDesc:
-                    inspectors = inspectors.OrderByDescending(i => i.FullName);
-                    break;
+                    return inspectors.OrderByDescending(i => i.FullName);
                 case InspectorsSortState.SubdivisionAsc:
-                    inspectors = inspectors.OrderBy(i => i.Subdivision);
-                    break;
+                    return inspectors.OrderBy(i => i.Subdivision);
                 case InspectorsSortState.SubdivisionDesc:
-                    inspectors = inspectors.OrderByDescending(i => i.Subdivision);
-                    break;
-                default:
-                    break;
+                    return inspectors.OrderByDescending(i => i.Subdivision);
             }
 
-            inspectors = inspectors.Where(i => i.FullName.StartsWith(filter.FullName ?? ""));
-            inspectors = inspectors.Where(i => i.Subdivision.StartsWith(filter.Subdivision ?? ""));
-
-            return View(await inspectors.AsNoTracking().ToListAsync());
+            return null;
         }
     }
 }

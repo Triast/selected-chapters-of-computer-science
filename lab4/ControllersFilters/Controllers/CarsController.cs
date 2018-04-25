@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ControllersFilters.Filters;
+using ControllersFilters.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using ControllersFilters.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ControllersFilters.Controllers
 {
@@ -21,6 +18,7 @@ namespace ControllersFilters.Controllers
         ReleaseYearDesc
     }
 
+    [ServiceFilter(typeof(MethodsInvocationLoggingAttribute))]
     public class CarsController : Controller
     {
         readonly CarServiceContext _context;
@@ -30,11 +28,64 @@ namespace ControllersFilters.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(CarFilter filter,
-            CarsSortState sortOrder = CarsSortState.StateNumberAsc)
+        [CarFormStateSaving]
+        public IActionResult Index(CarsSortState sortOrder = CarsSortState.StateNumberAsc)
         {
-            var cars = _context.Cars.AsQueryable();
+            if (!HttpContext.Session.TryGet(out IEnumerable<Car> cars))
+            {
+                cars = _context.Cars.AsQueryable();
 
+                HttpContext.Session.Set(cars);
+            }
+
+            ViewData["Marks"] = cars
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Mark,
+                    Text = c.Mark,
+                    Selected = c.Mark == ((string)HttpContext.Items["Mark"] ?? "")
+                })
+                .Distinct(new SelectListItemEqualityComparer())
+                .ToList();
+
+            cars = SortCars(cars, sortOrder);
+
+            return View(cars);
+        }
+
+        [HttpPost]
+        [CarFormStateSaving]
+        public IActionResult Index(CarFilter filter, CarsSortState sortOrder = CarsSortState.StateNumberAsc)
+        {
+            if (!HttpContext.Session.TryGet(out IEnumerable<Car> cars))
+            {
+                cars = _context.Cars.AsQueryable();
+
+                HttpContext.Session.Set(cars);
+            }
+
+            ViewData["Marks"] = cars
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Mark,
+                    Text = c.Mark,
+                    Selected = c.Mark == ((string)HttpContext.Items["Mark"] ?? "")
+                })
+                .Distinct(new SelectListItemEqualityComparer())
+                .ToList();
+
+            cars = SortCars(cars, sortOrder);
+
+            cars = cars
+                .Where(c => c.StateNumber.StartsWith(filter.StateNumber ?? ""))
+                .Where(c => c.Mark.StartsWith(filter.Mark ?? ""))
+                .Where(c => filter.ReleaseYear != 0 ? c.ReleaseYear == filter.ReleaseYear : true);
+
+            return View(cars);
+        }
+
+        IEnumerable<Car> SortCars(IEnumerable<Car> cars, CarsSortState sortOrder)
+        {
             ViewData["StateNumber"] = sortOrder == CarsSortState.StateNumberAsc ?
                 CarsSortState.StateNumberDesc : CarsSortState.StateNumberAsc;
             ViewData["Mark"] = sortOrder == CarsSortState.MarkAsc ?
@@ -45,32 +96,20 @@ namespace ControllersFilters.Controllers
             switch (sortOrder)
             {
                 case CarsSortState.StateNumberAsc:
-                    cars = cars.OrderBy(c => c.StateNumber);
-                    break;
+                    return cars.OrderBy(c => c.StateNumber);
                 case CarsSortState.StateNumberDesc:
-                    cars = cars.OrderByDescending(c => c.StateNumber);
-                    break;
+                    return cars.OrderByDescending(c => c.StateNumber);
                 case CarsSortState.MarkAsc:
-                    cars = cars.OrderBy(c => c.Mark);
-                    break;
+                    return cars.OrderBy(c => c.Mark);
                 case CarsSortState.MarkDesc:
-                    cars = cars.OrderByDescending(c => c.Mark);
-                    break;
+                    return cars.OrderByDescending(c => c.Mark);
                 case CarsSortState.ReleaseYearAsc:
-                    cars = cars.OrderBy(c => c.ReleaseYear);
-                    break;
+                    return cars.OrderBy(c => c.ReleaseYear);
                 case CarsSortState.ReleaseYearDesc:
-                    cars = cars.OrderByDescending(c => c.ReleaseYear);
-                    break;
-                default:
-                    break;
+                    return cars.OrderByDescending(c => c.ReleaseYear);
             }
 
-            cars = cars.Where(c => c.StateNumber.StartsWith(filter.StateNumber ?? ""));
-            cars = cars.Where(c => c.Mark.StartsWith(filter.Mark ?? ""));
-            cars = cars.Where(c => filter.ReleaseYear != 0 ? c.ReleaseYear == filter.ReleaseYear : true);
-
-            return View(await cars.AsNoTracking().ToListAsync());
+            return null;
         }
     }
 }

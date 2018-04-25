@@ -1,0 +1,101 @@
+﻿@model IEnumerable<CarTechState>
+
+@{
+    ViewData["Title"] = "Technical state of cars";
+
+    var stateNumbers = (List<SelectListItem>)ViewData["StateNumbers"];
+    var fullNames = (List<SelectListItem>)ViewData["FullNames"];
+    var brakeSystem = ViewContext.HttpContext.Items["BrakeSystem"] ?? "";
+}
+
+<form asp-controller="CarTechStates" asp-action="Index" method="post">
+    <div class="form-inline form-group">
+        <label for="StateNumber">Госномер:</label>
+        <select name="StateNumber" asp-items="stateNumbers" class="form-control"></select>
+        <label for="FullName">ФИО инспектора:</label>
+        <select name="FullName" asp-items="fullNames" class="form-control"></select>
+        <label for="BrakeSystem">Тормозная система:</label>
+        <input type="text" name="BrakeSystem" value="@brakeSystem" class="form-control" />
+        <input type="submit" value="Фильтр" class="btn btn-default" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-controller="CarTechStates" asp-action="Index" asp-route-sortOrder="@ViewData["StateNumber"]">
+                    @Html.DisplayNameFor(model => model.Car.StateNumber)
+                </a>
+            </th>
+            <th>
+                <a asp-controller="CarTechStates" asp-action="Index" asp-route-sortOrder="@ViewData["FullName"]">
+                    @Html.DisplayNameFor(model => model.Inspector.FullName)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mileage)
+            </th>
+            <th>
+                <a asp-controller="CarTechStates" asp-action="Index" asp-route-sortOrder="@ViewData["BrakeSystem"]">
+                    @Html.DisplayNameFor(model => model.BrakeSystem)
+                </a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Suspension)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Wheels)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lightning)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AdditionalEquipment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MarkOnPassageOfServiceStation)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Car.StateNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inspector.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mileage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BrakeSystem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Suspension)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Wheels)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lightning)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AdditionalEquipment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MarkOnPassageOfServiceStation)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

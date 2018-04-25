@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace ControllersFilters.Models
 {
-    public class Inspector
+    public class InspectorFilter
     {
-        public int InspectorId { get; set; }
         [DisplayName("ФИО инспектора")]
         public string FullName { get; set; }
         [DisplayName("Подразделение")]
         public string Subdivision { get; set; }
-
-        [Newtonsoft.Json.JsonIgnore]
-        public virtual List<CarTechState> CarTechStates { get; set; }
     }
 }

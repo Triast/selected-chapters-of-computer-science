@@ -3,20 +3,18 @@
 @{
     ViewData["Title"] = "Index";
 
-    var subdivisions = Model
-        .Select(i => new SelectListItem { Value = i.Subdivision, Text = i.Subdivision })
-        .Distinct()
-        .ToList();
+    var subdivisions = (List<SelectListItem>)ViewData["Subdivisions"];
+    var fullName = ViewContext.HttpContext.Items["FullName"] ?? "";
 }
 
 <h2>Index</h2>
 
-<form asp-controller="Inspectors" asp-action="Index" method="get">
+<form asp-controller="Inspectors" asp-action="Index" method="post">
     <div class="form-inline form-group">
         <label for="FullName">ФИО инспектора:</label>
-        <input type="text" name="FullName" class="form-control" />
+        <input type="text" name="FullName" value="@fullName" class="form-control" />
         <label for="Subdivision">Подразделение:</label>
-        <select name="Mark" asp-items="subdivisions" class="form-control"></select>
+        <select name="Subdivision" asp-items="subdivisions" class="form-control"></select>
         <input type="submit" value="Фильтр" class="btn btn-default" />
     </div>
 </form>
