@@ -48,7 +48,7 @@ namespace EntityFrameworkCore
                     " между собой отношением «один-ко-многим»:",
                     context.CarTechStates.Include("Inspector").Select(c => new 
                     {
-                        CarTechStateId = c.CarTechStateId,
+                        c.CarTechStateId,
                         InspectorName = c.Inspector.FullName
                     })
                 );
@@ -63,8 +63,8 @@ namespace EntityFrameworkCore
                         .Include("Inspector")
                         .Where(c => c.Date < DateTime.Now.AddYears(-10))
                         .Select(c => new {
-                            CarTechStateId = c.CarTechStateId,
-                            Date = c.Date,
+                            c.CarTechStateId,
+                            c.Date,
                             InspectorName = c.Inspector.FullName
                         })
                 );
@@ -91,30 +91,34 @@ namespace EntityFrameworkCore
 
         static void PrintQuery(string comment, IEnumerable query)
         {
-            System.Console.WriteLine(comment);
+            Console.WriteLine(comment);
 
             foreach (var item in query)
             {
-                System.Console.WriteLine(item);
+                Console.WriteLine(item);
             }
 
-            System.Console.WriteLine();
-            System.Console.WriteLine("Для продолжения нажмите клавишу Enter...");
+            Console.WriteLine();
+            Console.WriteLine("Для продолжения нажмите клавишу Enter...");
             Console.ReadLine();
         }
 
         static void Insert<T>(string comment, string type, T obj, CarServiceContext context)
             where T: class
         {
-            System.Console.WriteLine(comment);
-            System.Console.WriteLine(type);
-            System.Console.WriteLine(obj);
+            Console.WriteLine(comment);
+            Console.WriteLine(type);
+            Console.WriteLine(obj);
+
+            Console.WriteLine("Кол-во записей до добавления: " + context.Set<T>().Count());
 
             context.Set<T>().Add(obj);
             context.SaveChanges();
-            
-            System.Console.WriteLine();
-            System.Console.WriteLine("Для продолжения нажмите клавишу Enter...");
+
+            Console.WriteLine("Кол-во записей после добавления: " + context.Set<T>().Count());
+
+            Console.WriteLine();
+            Console.WriteLine("Для продолжения нажмите клавишу Enter...");
             Console.ReadLine();
         }
 
@@ -159,7 +163,7 @@ namespace EntityFrameworkCore
 
         static void Remove(string comment, CarServiceContext context)
         {
-            System.Console.WriteLine(comment);
+            Console.WriteLine(comment);
 
             var inspectorCountBefore = context.Inspectors.Count();
             var statesCountBefore = context.CarTechStates.Count();
@@ -179,20 +183,20 @@ namespace EntityFrameworkCore
             var inspectorCountAfter = context.Inspectors.Count();
             var statesCountAfter = context.CarTechStates.Count();
 
-            System.Console.WriteLine("Кол-во инспекторов до удаления - " + inspectorCountBefore);
-            System.Console.WriteLine("Кол-во инспекторов после удаления - " + inspectorCountAfter);
+            Console.WriteLine("Кол-во инспекторов до удаления - " + inspectorCountBefore);
+            Console.WriteLine("Кол-во инспекторов после удаления - " + inspectorCountAfter);
 
-            System.Console.WriteLine("\nКол-во car tech states до удаления - " + statesCountBefore);
-            System.Console.WriteLine("Кол-во car tech states после удаления - " + statesCountAfter);
+            Console.WriteLine("\nКол-во записей о тех. состоянии автомобилей до удаления - " + statesCountBefore);
+            Console.WriteLine("Кол-во записей о тех. состоянии автомобилей после удаления - " + statesCountAfter);
 
-            System.Console.WriteLine();
-            System.Console.WriteLine("Для продолжения нажмите клавишу Enter...");
+            Console.WriteLine();
+            Console.WriteLine("Для продолжения нажмите клавишу Enter...");
             Console.ReadLine();
         }
 
         static void UpdateMileage(string comment, CarServiceContext context)
         {
-            System.Console.WriteLine(comment);
+            Console.WriteLine(comment);
 
             var states = context.CarTechStates.Where(c => c.Date > DateTime.Now.AddYears(-10));
 
@@ -207,8 +211,8 @@ namespace EntityFrameworkCore
 
             PrintQuery("После обновления:", states.Take(10));
 
-            System.Console.WriteLine();
-            System.Console.WriteLine("Для продолжения нажмите клавишу Enter...");
+            Console.WriteLine();
+            Console.WriteLine("Для продолжения нажмите клавишу Enter...");
             Console.ReadLine();
         }
     }

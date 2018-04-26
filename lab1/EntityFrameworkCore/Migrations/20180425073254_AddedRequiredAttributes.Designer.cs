@@ -11,9 +11,10 @@ using System;
 namespace EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CarServiceContext))]
-    partial class CarServiceContextModelSnapshot : ModelSnapshot
+    [Migration("20180425073254_AddedRequiredAttributes")]
+    partial class AddedRequiredAttributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

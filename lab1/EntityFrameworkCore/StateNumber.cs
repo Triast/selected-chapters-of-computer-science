@@ -12,7 +12,7 @@ namespace EntityFrameworkCore
         {
             number = rand.Next(10000).ToString("d4") +
                 rand.NextChar() + rand.NextChar() +
-                "-" + rand.Next(1, 8).ToString("d2");
+                "-" + rand.Next(1, 8);
         }
 
         public override string ToString()
