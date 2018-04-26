@@ -14,12 +14,16 @@ namespace StateCache.Models
         [DisplayName("Пробег")]
         public double Mileage { get; set; }
         [DisplayName("Тормозная система")]
+        [Required]
         public string BrakeSystem { get; set; }
         [DisplayName("Подвеска")]
+        [Required]
         public string Suspension { get; set; }
         [DisplayName("Колёса")]
+        [Required]
         public string Wheels { get; set; }
         [DisplayName("Осветительные приборы")]
+        [Required]
         public string Lightning { get; set; }
         [DisplayName("Доп. оборудование")]
         public string AdditionalEquipment { get; set; }
