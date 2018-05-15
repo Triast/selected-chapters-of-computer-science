@@ -48,7 +48,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]CarTechState state)
         {
-            if (state == null)
+            if (state == null || string.IsNullOrEmpty(state.BrakeSystem))
             {
                 return BadRequest();
             }

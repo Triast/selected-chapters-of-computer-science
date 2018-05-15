@@ -122,20 +122,10 @@
         function createState(state) {
             $.ajax({
                 url: "api/CarTechStates",
-                contentType: "application/json",
+                contentType: 'application/json; charset=utf-8',
                 method: "POST",
-                data: JSON.stringify({
-                    carId: state.carId,
-                    inspectorId: state.inspectorId,
-                    date: state.date,
-                    mileage: state.mileage,
-                    brakeSystem: state.brakeSystem,
-                    suspension: state.suspension,
-                    wheels: state.wheels,
-                    lightning: state.lightning,
-                    additionalEquipment: state.additionalEquipment,
-                    markOnPassageOfServiceStation: state.markOnPassageOfServiceStation
-                }),
+                data: '=' + JSON.stringify({ state: state }),
+                dataType: "json",
                 success: function (state) {
                     reset();
                     $("table tbody").append(row(state));
@@ -149,17 +139,19 @@
                 contentType: "application/json",
                 method: "PUT",
                 data: JSON.stringify({
-                    carTechStateId: state.carTechStateId,
-                    carId: state.carId,
-                    inspectorId: state.inspectorId,
-                    date: state.date,
-                    mileage: state.mileage,
-                    brakeSystem: state.brakeSystem,
-                    suspension: state.suspension,
-                    wheels: state.wheels,
-                    lightning: state.lightning,
-                    additionalEquipment: state.additionalEquipment,
-                    markOnPassageOfServiceStation: state.markOnPassageOfServiceStation
+                    state: {
+                        carTechStateId: state.carTechStateId,
+                        carId: state.carId,
+                        inspectorId: state.inspectorId,
+                        date: state.date,
+                        mileage: state.mileage,
+                        brakeSystem: state.brakeSystem,
+                        suspension: state.suspension,
+                        wheels: state.wheels,
+                        lightning: state.lightning,
+                        additionalEquipment: state.additionalEquipment,
+                        markOnPassageOfServiceStation: state.markOnPassageOfServiceStation
+                    }
                 }),
                 success: function (state) {
                     reset();
