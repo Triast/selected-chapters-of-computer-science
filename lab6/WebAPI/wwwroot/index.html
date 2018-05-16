@@ -22,7 +22,7 @@
         </div>
         <div class="form-group">
             <label for="age">Дата:</label>
-            <input type="date" class="form-control" name="date" />
+            <input type="date" class="form-control" name="date" id="date" />
         </div>
         <div class="form-group">
             <label for="age">Пробег:</label>
@@ -119,12 +119,29 @@
             });
         }
 
-        function createState(state) {
+        function createState(
+            carId, inspectorId, date, mileage,
+            brakeSystem, suspension, wheels,
+            lightning, additionalEquipment,
+            markOnPassageOfServiceStation) {
+            var model = "{" +
+                "\"CarId\":\"" + carId + "\"," +
+                "\"InspectorId\":\"" + inspectorId + "\"," +
+                "\"Date\":\"" + date +"\"," +
+                "\"Mileage\":\"" + mileage + "\"," +
+                "\"BrakeSystem\":\"" + brakeSystem + "\"," +
+                "\"Suspension\":\"" + suspension + "\"," +
+                "\"Wheels\":\"" + wheels + "\"," +
+                "\"Lightning\":\"" + lightning + "\"," +
+                "\"AdditionalEquipment\":\"" + additionalEquipment + "\"," +
+                "\"MarkOnPassageOfServiceStation\":\"" + (markOnPassageOfServiceStation == "on" ? "true" : "false") + "\"" +
+            "}";
+
             $.ajax({
                 url: "api/CarTechStates",
-                contentType: 'application/json; charset=utf-8',
+                contentType: 'application/json',
                 method: "POST",
-                data: '=' + JSON.stringify({ state: state }),
+                data: model,
                 dataType: "json",
                 success: function (state) {
                     reset();
@@ -133,33 +150,36 @@
             })
         }
 
-        function editState(state) {
+        function editState(carTechStateId, carId,
+            inspectorId, date, mileage,
+            brakeSystem, suspension, wheels,
+            lightning, additionalEquipment,
+            markOnPassageOfServiceStation) {
+            var model = "{" +
+                "\"CarTechStateId\":\"" + carTechStateId + "\"," +
+                "\"CarId\":\"" + carId + "\"," +
+                "\"InspectorId\":\"" + inspectorId + "\"," +
+                "\"Date\":\"" + date + "\"," +
+                "\"Mileage\":\"" + mileage + "\"," +
+                "\"BrakeSystem\":\"" + brakeSystem + "\"," +
+                "\"Suspension\":\"" + suspension + "\"," +
+                "\"Wheels\":\"" + wheels + "\"," +
+                "\"Lightning\":\"" + lightning + "\"," +
+                "\"AdditionalEquipment\":\"" + additionalEquipment + "\"," +
+                "\"MarkOnPassageOfServiceStation\":\"" + (markOnPassageOfServiceStation == "on" ? "true" : "false") + "\"" +
+                "}";
+
             $.ajax({
-                url: "api/CarTechStates",
+                url: "api/CarTechStates/" + carTechStateId,
                 contentType: "application/json",
                 method: "PUT",
-                data: JSON.stringify({
-                    state: {
-                        carTechStateId: state.carTechStateId,
-                        carId: state.carId,
-                        inspectorId: state.inspectorId,
-                        date: state.date,
-                        mileage: state.mileage,
-                        brakeSystem: state.brakeSystem,
-                        suspension: state.suspension,
-                        wheels: state.wheels,
-                        lightning: state.lightning,
-                        additionalEquipment: state.additionalEquipment,
-                        markOnPassageOfServiceStation: state.markOnPassageOfServiceStation
-                    }
-                }),
+                data: model,
                 success: function (state) {
                     reset();
                     $("tr[data-rowid='" + state.id + "']").replaceWith(row(state));
                 }
             })
         }
-
 
         function reset() {
             const form = document.forms["stateForm"];
@@ -170,11 +190,11 @@
 
         function deleteState(id) {
             $.ajax({
-                url: "api/CarTechState/" + id,
+                url: "api/CarTechStates/" + id,
                 contentType: "application/json",
                 method: "DELETE",
                 success: function (state) {
-                    $("tr[data-rowid='" + state.id + "']").remove();
+                    $("tr[data-rowid='" + state.carTechStateId + "']").remove();
                 }
             })
         }
@@ -203,25 +223,23 @@
         $("form").submit(function (e) {
             e.preventDefault();
 
-            const state = {};
+            carTechStateId = this.elements["carTechStateId"].value;
+            carId = this.elements["carId"].value;
+            inspectorId = this.elements["inspectorId"].value;
+            date = this.elements["date"].value;
+            mileage = this.elements["mileage"].value;
+            brakeSystem = this.elements["brakeSystem"].value;
+            suspension = this.elements["suspension"].value;
+            wheels = this.elements["wheels"].value;
+            lightning = this.elements["lightning"].value;
+            additionalEquipment = this.elements["additionalEquipment"].value;
+            markOnPassageOfServiceStation = this.elements["markOnPassageOfServiceStation"].value;
 
-            state.carTechStateId = this.elements["carTechStateId"].value;
-            state.carId = this.elements["carId"].value;
-            state.inspectorId = this.elements["inspectorId"].value;
-            state.date = this.elements["date"].value;
-            state.mileage = this.elements["mileage"].value;
-            state.brakeSystem = this.elements["brakeSystem"].value;
-            state.suspension = this.elements["suspension"].value;
-            state.wheels = this.elements["wheels"].value;
-            state.lightning = this.elements["lightning"].value;
-            state.additionalEquipment = this.elements["additionalEquipment"].value;
-            state.markOnPassageOfServiceStation = this.elements["markOnPassageOfServiceStation"].value;
-
-            if (state.carTechStateId == 0) {
-                createState(state);
+            if (carTechStateId == 0) {
+                createState(carId, inspectorId, date, mileage, brakeSystem, suspension, wheels, lightning, additionalEquipment, markOnPassageOfServiceStation);
             }
             else {
-                editState(state);
+                editState(carTechStateId, carId, inspectorId, date, mileage, brakeSystem, suspension, wheels, lightning, additionalEquipment, markOnPassageOfServiceStation);
             }
         });
 

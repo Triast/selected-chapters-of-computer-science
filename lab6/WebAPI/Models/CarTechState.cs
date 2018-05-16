@@ -30,19 +30,21 @@ namespace WebAPI.Models
         [DisplayName("Прохождение СТО")]
         public bool MarkOnPassageOfServiceStation { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public virtual Car Car { get; set; }
+        [Newtonsoft.Json.JsonIgnore]
         public virtual Inspector Inspector { get; set; }
 
-        public override string ToString()
-        {
-            return "( ИД = " + CarTechStateId + ", ИД авто = " + CarId +
-                ", ИД инспектора = " + InspectorId + ", дата = " +
-                Date.ToShortDateString() + ", пробег = " + Mileage +
-                ", тормозная система = " + BrakeSystem + ", подвеска" +
-                Suspension + ", колёса = " + Wheels + ", осветительные приборы = " +
-                Lightning + ", доп. оборудование = " + (AdditionalEquipment ?? "нет") +
-                ", отметка о прохождении СТО = " + MarkOnPassageOfServiceStation +
-                " )";
-        }
+        //public override string ToString()
+        //{
+        //    return "( ИД = " + CarTechStateId + ", ИД авто = " + CarId +
+        //        ", ИД инспектора = " + InspectorId + ", дата = " +
+        //        Date.ToShortDateString() + ", пробег = " + Mileage +
+        //        ", тормозная система = " + BrakeSystem + ", подвеска" +
+        //        Suspension + ", колёса = " + Wheels + ", осветительные приборы = " +
+        //        Lightning + ", доп. оборудование = " + (AdditionalEquipment ?? "нет") +
+        //        ", отметка о прохождении СТО = " + MarkOnPassageOfServiceStation +
+        //        " )";
+        //}
     }
 }

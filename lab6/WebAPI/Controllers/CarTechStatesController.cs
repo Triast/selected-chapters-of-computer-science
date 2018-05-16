@@ -46,17 +46,17 @@ namespace WebAPI.Controllers
         
         // POST: api/CarTechStates
         [HttpPost]
-        public IActionResult Post([FromBody]CarTechState state)
+        public IActionResult Post([FromBody]CarTechState model)
         {
-            if (state == null || string.IsNullOrEmpty(state.BrakeSystem))
+            if (model == null)
             {
                 return BadRequest();
             }
 
-            _context.CarTechStates.Add(state);
+            _context.CarTechStates.Add(model);
             _context.SaveChanges();
 
-            return Ok(state);
+            return Ok(model);
         }
         
         // PUT: api/CarTechStates/5
@@ -68,12 +68,25 @@ namespace WebAPI.Controllers
                 return BadRequest();
             }
 
-            if (!_context.CarTechStates.Any(s => s.CarTechStateId == state.CarTechStateId))
+            var fromDb = _context.CarTechStates.FirstOrDefault(s => s.CarTechStateId == state.CarTechStateId);
+
+            if (fromDb == null)
             {
                 return NotFound();
             }
 
-            _context.Update(state);
+            fromDb.CarId = state.CarId;
+            fromDb.InspectorId = state.InspectorId;
+            fromDb.Date = state.Date;
+            fromDb.Mileage = state.Mileage;
+            fromDb.BrakeSystem = state.BrakeSystem;
+            fromDb.Suspension = state.Suspension;
+            fromDb.Wheels = state.Wheels;
+            fromDb.Lightning = state.Lightning;
+            fromDb.AdditionalEquipment = state.AdditionalEquipment;
+            fromDb.MarkOnPassageOfServiceStation = state.MarkOnPassageOfServiceStation;
+
+            _context.Update(fromDb);
             _context.SaveChanges();
 
             return Ok(state);
