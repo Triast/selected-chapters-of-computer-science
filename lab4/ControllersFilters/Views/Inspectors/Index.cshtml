@@ -1,0 +1,49 @@
+﻿@model IEnumerable<ControllersFilters.Models.Inspector>
+
+@{
+    ViewData["Title"] = "Index";
+
+    var subdivisions = (List<SelectListItem>)ViewData["Subdivisions"];
+    var fullName = ViewContext.HttpContext.Items["FullName"] ?? "";
+}
+
+<h2>Index</h2>
+
+<form asp-controller="Inspectors" asp-action="Index" method="post">
+    <div class="form-inline form-group">
+        <label for="FullName">ФИО инспектора:</label>
+        <input type="text" name="FullName" value="@fullName" class="form-control" />
+        <label for="Subdivision">Подразделение:</label>
+        <select name="Subdivision" asp-items="subdivisions" class="form-control"></select>
+        <input type="submit" value="Фильтр" class="btn btn-default" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-controller="Inspectors" asp-action="Index" asp-route-sortOrder="@ViewData["FullName"]">
+                    @Html.DisplayNameFor(model => model.FullName)
+                </a>
+            </th>
+            <th>
+                <a asp-controller="Inspectors" asp-action="Index" asp-route-sortOrder="@ViewData["Subdivision"]">
+                    @Html.DisplayNameFor(model => model.Subdivision)
+                </a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Subdivision)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

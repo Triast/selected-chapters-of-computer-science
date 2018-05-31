@@ -1,0 +1,91 @@
+﻿@model IEnumerable<ControllersFilters.Models.Car>
+
+@{
+    ViewData["Title"] = "Index";
+
+    var marks = (List<SelectListItem>)ViewData["Marks"];
+
+    var stateNumber = ViewContext.HttpContext.Items["StateNumber"] ?? "";
+    var releaseYear = (int?)ViewContext.HttpContext.Items["ReleaseYear"] ?? 1900;
+}
+
+<h2>Index</h2>
+
+<form asp-controller="Cars" asp-action="Index" method="post">
+    <div class="form-inline form-group">
+        <label for="StateNumber">Госномер:</label>
+        <input type="text" name="StateNumber" value="@stateNumber" class="form-control" />
+        <label for="Mark">Марка:</label>
+        <select name="Mark" asp-items="marks" class="form-control"></select>
+        <label for="ReleaseYear">Год выпуска:</label>
+        <input type="number" min="1900" max="@DateTime.Now.Year" name="ReleaseYear" value="@releaseYear" class="form-control" />
+        <input type="submit" value="Фильтр" class="btn btn-default" />
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    <a asp-controller="Cars" asp-action="Index" asp-route-sortOrder="@ViewData["StateNumber"]">
+                        @Html.DisplayNameFor(model => model.StateNumber)
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TechnicalPassport)
+                </th>
+                <th>
+                    <a asp-controller="Cars" asp-action="Index" asp-route-sortOrder="@ViewData["Mark"]">
+                        @Html.DisplayNameFor(model => model.Mark)
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EngineVolume)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BodyNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EngineNumber)
+                </th>
+                <th>
+                    <a asp-controller="Cars" asp-action="Index" asp-route-sortOrder="@ViewData["ReleaseYear"]">
+                        @Html.DisplayNameFor(model => model.ReleaseYear)
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.OwnerName)
+                </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StateNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TechnicalPassport)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Mark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EngineVolume)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BodyNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EngineNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OwnerName)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
