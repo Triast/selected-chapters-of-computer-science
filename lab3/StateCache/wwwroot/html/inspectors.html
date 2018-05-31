@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inspectors - Car Service Site</title>
+
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="/Home/Index/" class="navbar-brand">Car Service Site</a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="/Home/Index/">Home</a></li>
+                    <li><a href="/Home/About/">About</a></li>
+                    <li><a href="/Home/Contact/">Contact</a></li>
+                    <li><a href="/Home/Cars/">Cars</a></li>
+                    <li><a href="/Home/Inspectors/">Inspectors</a></li>
+                    <li><a href="/Home/CarTechStates/">Car tech states</a></li>
+                    <li><a href="/html/inspectors.html">Inspectors HTML</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        <form action="/Home/Inspectors" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label for="FullName" class="col-md-2 control-label">ФИО инспектора</label>
+                <div class="col-md-10">
+                    <input type="text" name="FullName" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Subdivision" class="col-md-2 control-label">Подразделение</label>
+                <div class="col-md-10">
+                    <select name="Subdivision">
+                        <option value="Подразделение_1">Подразделение_1</option>
+                        <option value="Подразделение_2">Подразделение_2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <p>Доступные подразделение:</p>
+                <ul>
+                    <li>Подразделение_1</li>
+                    <li>Подразделение_2</li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Отправить" />
+            </div>
+        </form>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ФИО инспектора</th>
+                    <th>Подразделение</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Иванов Иван Иванович</td>
+                    <td>Подразделение_1</td>
+                </tr>
+                <tr>
+                    <td>Петров Пётр Петрович</td>
+                    <td>Подразделение_2</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <img src="../images/IMG_0346.jpg" class="img-thumbnail" alt="Happy man with red phone" />
+
+        <hr />
+        <footer>
+            <p>&copy; 2018 - CarServiceSite</p>
+        </footer>
+    </div>
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js"></script>
+</body>
+</html>
