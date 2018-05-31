@@ -1,0 +1,82 @@
+﻿@model Authentication.Models.CarTechState
+
+@{
+    ViewData["Title"] = "Edit";
+
+    var stateNumbers = (List<SelectListItem>)ViewData["StateNumbers"];
+    var fullNames = (List<SelectListItem>)ViewData["FullNames"];
+}
+
+<h2>Edit</h2>
+
+<h4>Inspector</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CarTechStateId" />
+            <div class="form-group">
+                <label asp-for="CarId" class="control-label"></label>
+                <select name="CarId" asp-items="stateNumbers" class="form-control"></select>
+                <span asp-validation-for="CarId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InspectorId" class="control-label"></label>
+                <select name="InspectorId" asp-items="fullNames" class="form-control"></select>
+                <span asp-validation-for="InspectorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mileage" class="control-label"></label>
+                <input asp-for="Mileage" class="form-control" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BrakeSystem" class="control-label"></label>
+                <input asp-for="BrakeSystem" class="form-control" />
+                <span asp-validation-for="BrakeSystem" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Suspension" class="control-label"></label>
+                <input asp-for="Suspension" class="form-control" />
+                <span asp-validation-for="Suspension" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Wheels" class="control-label"></label>
+                <input asp-for="Wheels" class="form-control" />
+                <span asp-validation-for="Wheels" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Lightning" class="control-label"></label>
+                <input asp-for="Lightning" class="form-control" />
+                <span asp-validation-for="Lightning" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AdditionalEquipment" class="control-label"></label>
+                <input asp-for="AdditionalEquipment" class="form-control" />
+                <span asp-validation-for="AdditionalEquipment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MarkOnPassageOfServiceStation" class="control-label"></label>
+                <input asp-for="MarkOnPassageOfServiceStation" class="form-control" />
+                <span asp-validation-for="MarkOnPassageOfServiceStation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,78 @@
+﻿@model Authentication.Models.CarTechState
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Inspector</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Car.StateNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Car.StateNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Inspector.FullName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Inspector.FullName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Mileage)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Mileage)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BrakeSystem)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BrakeSystem)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Suspension)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Suspension)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Wheels)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Wheels)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lightning)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lightning)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AdditionalEquipment)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AdditionalEquipment)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MarkOnPassageOfServiceStation)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MarkOnPassageOfServiceStation)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.InspectorId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
