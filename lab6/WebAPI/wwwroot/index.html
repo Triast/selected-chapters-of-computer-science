@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Список технических состояний автомобилей</title>
+    <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="lib/jquery/dist/jquery.js"></script>
+</head>
+<body>
+    <h2>Список технических состояний автомобилей</h2>
+
+    <form name="stateForm">
+        <input type="hidden" name="carTechStateId" value="0" />
+        <div class="form-group">
+            <label for="name">ID автомобиля:</label>
+            <input class="form-control" name="carId" />
+        </div>
+        <div class="form-group">
+            <label for="age">ID инспектора:</label>
+            <input class="form-control" name="inspectorId" />
+        </div>
+        <div class="form-group">
+            <label for="age">Дата:</label>
+            <input type="date" class="form-control" name="date" id="date" />
+        </div>
+        <div class="form-group">
+            <label for="age">Пробег:</label>
+            <input class="form-control" name="mileage" />
+        </div>
+        <div class="form-group">
+            <label for="age">Тормозная система:</label>
+            <input class="form-control" name="brakeSystem" />
+        </div>
+        <div class="form-group">
+            <label for="age">Подвеска:</label>
+            <input class="form-control" name="suspension" />
+        </div>
+        <div class="form-group">
+            <label for="age">Колёса:</label>
+            <input class="form-control" name="wheels" />
+        </div>
+        <div class="form-group">
+            <label for="age">Осветительные приборы:</label>
+            <input class="form-control" name="lightning" />
+        </div>
+        <div class="form-group">
+            <label for="age">Доп. оборудование:</label>
+            <input class="form-control" name="additionalEquipment" />
+        </div>
+        <div class="form-group">
+            <label for="age">Прохождение СТО:</label>
+            <input type="checkbox" class="form-control" name="markOnPassageOfServiceStation" />
+        </div>
+        <div class="panel-body">
+            <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+            <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+        </div>
+    </form>
+
+    <table class="table table-condensed table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID автомобиля</th>
+                <th>ID инспектора</th>
+                <th>Дата</th>
+                <th>Пробег</th>
+                <th>Тормозная система</th>
+                <th>Подвеска</th>
+                <th>Колёса</th>
+                <th>Осветительные приборы</th>
+                <th>Доп. оборудование</th>
+                <th>Прохождение СТО</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function getStates() {
+            $.ajax({
+                url: '/api/CarTechStates',
+                type: 'GET',
+                contentType: "application/json",
+                success: function (states) {
+                    let rows = "";
+
+                    $.each(states, function (index, state) {
+                        // добавляем полученные элементы в таблицу
+                        rows += row(state);
+                    });
+
+                    $("table tbody").append(rows);
+                 }
+            });
+        }
+
+        function getState(id) {
+            $.ajax({
+                url: '/api/CarTechStates/' + id,
+                type: 'GET',
+                contentType: "application/json",
+                success: function (state) {
+                    const form = document.forms["stateForm"];
+
+                    form.elements["carTechStateId"].value = state.carTechStateId;
+                    form.elements["carId"].value = state.carId;
+                    form.elements["inspectorId"].value = state.inspectorId;
+                    form.elements["date"].value = state.date.substr(0, 10);
+                    form.elements["mileage"].value = state.mileage;
+                    form.elements["brakeSystem"].value = state.brakeSystem;
+                    form.elements["suspension"].value = state.suspension;
+                    form.elements["wheels"].value = state.wheels;
+                    form.elements["lightning"].value = state.lightning;
+                    form.elements["additionalEquipment"].value = state.additionalEquipment;
+                    form.elements["markOnPassageOfServiceStation"].checked = state.markOnPassageOfServiceStation;
+                }
+            });
+        }
+
+        function createState(
+            carId, inspectorId, date, mileage,
+            brakeSystem, suspension, wheels,
+            lightning, additionalEquipment,
+            markOnPassageOfServiceStation) {
+            var model = "{" +
+                "\"CarId\":\"" + carId + "\"," +
+                "\"InspectorId\":\"" + inspectorId + "\"," +
+                "\"Date\":\"" + date +"\"," +
+                "\"Mileage\":\"" + mileage + "\"," +
+                "\"BrakeSystem\":\"" + brakeSystem + "\"," +
+                "\"Suspension\":\"" + suspension + "\"," +
+                "\"Wheels\":\"" + wheels + "\"," +
+                "\"Lightning\":\"" + lightning + "\"," +
+                "\"AdditionalEquipment\":\"" + additionalEquipment + "\"," +
+                "\"MarkOnPassageOfServiceStation\":\"" + (markOnPassageOfServiceStation == "on" ? "true" : "false") + "\"" +
+            "}";
+
+            $.ajax({
+                url: "api/CarTechStates",
+                contentType: 'application/json',
+                method: "POST",
+                data: model,
+                dataType: "json",
+                success: function (state) {
+                    reset();
+                    $("table tbody").append(row(state));
+                }
+            })
+        }
+
+        function editState(carTechStateId, carId,
+            inspectorId, date, mileage,
+            brakeSystem, suspension, wheels,
+            lightning, additionalEquipment,
+            markOnPassageOfServiceStation) {
+            var model = "{" +
+                "\"CarTechStateId\":\"" + carTechStateId + "\"," +
+                "\"CarId\":\"" + carId + "\"," +
+                "\"InspectorId\":\"" + inspectorId + "\"," +
+                "\"Date\":\"" + date + "\"," +
+                "\"Mileage\":\"" + mileage + "\"," +
+                "\"BrakeSystem\":\"" + brakeSystem + "\"," +
+                "\"Suspension\":\"" + suspension + "\"," +
+                "\"Wheels\":\"" + wheels + "\"," +
+                "\"Lightning\":\"" + lightning + "\"," +
+                "\"AdditionalEquipment\":\"" + additionalEquipment + "\"," +
+                "\"MarkOnPassageOfServiceStation\":\"" + (markOnPassageOfServiceStation == "on" ? "true" : "false") + "\"" +
+                "}";
+
+            $.ajax({
+                url: "api/CarTechStates/" + carTechStateId,
+                contentType: "application/json",
+                method: "PUT",
+                data: model,
+                success: function (state) {
+                    reset();
+                    $("tr[data-rowid='" + state.id + "']").replaceWith(row(state));
+                }
+            })
+        }
+
+        function reset() {
+            const form = document.forms["stateForm"];
+            form.reset();
+            form.elements["carTechStateId"].value = 0;
+        }
+
+
+        function deleteState(id) {
+            $.ajax({
+                url: "api/CarTechStates/" + id,
+                contentType: "application/json",
+                method: "DELETE",
+                success: function (state) {
+                    $("tr[data-rowid='" + state.carTechStateId + "']").remove();
+                }
+            })
+        }
+
+        const row = state =>
+            "<tr data-rowid='" + state.carTechStateId + "'>" +
+            "<td>" + state.carId + "</td>" +
+            "<td>" + state.inspectorId + "</td>" +
+            "<td>" + state.date + "</td>" +
+            "<td>" + state.mileage + "</td>" +
+            "<td>" + state.brakeSystem + "</td>" +
+            "<td>" + state.suspension + "</td>" +
+            "<td>" + state.wheels + "</td>" +
+            "<td>" + state.lightning + "</td>" +
+            "<td>" + state.additionalEquipment + "</td>" +
+            "<td>" + state.markOnPassageOfServiceStation + "</td>" +
+            "<td><a href='#' class='editLink' data-id='" + state.carTechStateId + "'>Изменить</a> | " +
+            "<a href='#' class='removeLink' data-id='" + state.carTechStateId + "'>Удалить</a></td></tr>";
+
+        $("#reset").click(function (e) {
+            e.preventDefault();
+            reset();
+        })
+
+
+        $("form").submit(function (e) {
+            e.preventDefault();
+
+            carTechStateId = this.elements["carTechStateId"].value;
+            carId = this.elements["carId"].value;
+            inspectorId = this.elements["inspectorId"].value;
+            date = this.elements["date"].value;
+            mileage = this.elements["mileage"].value;
+            brakeSystem = this.elements["brakeSystem"].value;
+            suspension = this.elements["suspension"].value;
+            wheels = this.elements["wheels"].value;
+            lightning = this.elements["lightning"].value;
+            additionalEquipment = this.elements["additionalEquipment"].value;
+            markOnPassageOfServiceStation = this.elements["markOnPassageOfServiceStation"].value;
+
+            if (carTechStateId == 0) {
+                createState(carId, inspectorId, date, mileage, brakeSystem, suspension, wheels, lightning, additionalEquipment, markOnPassageOfServiceStation);
+            }
+            else {
+                editState(carTechStateId, carId, inspectorId, date, mileage, brakeSystem, suspension, wheels, lightning, additionalEquipment, markOnPassageOfServiceStation);
+            }
+        });
+
+
+        $("body").on("click", ".editLink", function () {
+            const id = $(this).data("id");
+
+            getState(id);
+        })
+
+        $("body").on("click", ".removeLink", function () {
+            const id = $(this).data("id");
+
+            deleteState(id);
+        })
+        
+        getStates();
+    </script>
+</body>
+</html>
